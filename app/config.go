@@ -121,8 +121,8 @@ func (cfg *Config) handleConfigUpdate(e fsnotify.Event) {
 	}
 
 	var updatedCfg = &Config{}
-	viper.ReadConfig(file)
-	viper.Unmarshal(&updatedCfg)
+	_ = viper.ReadConfig(file)
+	_ = viper.Unmarshal(&updatedCfg)
 
 	updateConfig(cfg, updatedCfg)
 }
@@ -182,7 +182,7 @@ func (cfg *Config) ensureUserDirs() {
 		if user.Subdir != nil {
 			path := filepath.Join(cfg.Dir, *user.Subdir)
 			if _, err := os.Stat(path); os.IsNotExist(err) {
-				os.Mkdir(path, os.ModePerm)
+				_ = os.Mkdir(path, os.ModePerm)
 				log.WithField("path", path).Info("Created user dir")
 			}
 		}
