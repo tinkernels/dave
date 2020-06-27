@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/micromata/dave.svg?branch=master)](https://travis-ci.org/micromata/dave)
+[![Build Status](https://travis-ci.com/tinkernels/dave.svg?branch=master)](https://travis-ci.com/tinkernels/dave)
 [![Go Report](https://goreportcard.com/badge/github.com/micromata/dave)](https://goreportcard.com/report/github.com/micromata/dave)
 
 # dave - The simple webdav server
@@ -11,6 +11,7 @@ _dave_ is a simple webdav server that provides the following features:
 - A simple user management which allows user-directory-jails as well as full admin access to all subdirectories.
 - Live config reload to allow editing of users without downtime.
 - A cli tool to generate BCrypt password hashes.
+- Only user named `admin` has write permission.
 
 It perfectly fits if you would like to give some people the possibility to upload, download or share files with common tools like the OSX Finder, Windows Explorer or Nautilus under Linux ([or many other tools](https://en.wikipedia.org/wiki/Comparison_of_WebDAV_software#WebDAV_clients)).
 
