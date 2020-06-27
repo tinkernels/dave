@@ -30,7 +30,7 @@ var PasswdCmd = &cobra.Command{
 
 func readPassword(hint string) []byte {
 	fmt.Print(hint)
-	pw, err := terminal.ReadPassword(syscall.Stdin)
+	pw, err := terminal.ReadPassword(int(uintptr(syscall.Stdin)))
 	if err != nil {
 		fmt.Printf("An error occurred reading the password: %s\n", err)
 		os.Exit(1)
