@@ -12,14 +12,15 @@ import (
 
 // Config represents the configuration of the server application.
 type Config struct {
-	Address string
-	Port    string
-	Prefix  string
-	Dir     string
-	TLS     *TLS
-	Log     Logging
-	Realm   string
-	Users   map[string]*UserInfo
+	Address           string
+	Port              string
+	Prefix            string
+	Dir               string
+	TLS               *TLS
+	Log               Logging
+	Realm             string
+	HideDotPrefixFile bool
+	Users             map[string]*UserInfo
 }
 
 // Logging allows definition for logging each CRUD method.
@@ -95,6 +96,7 @@ func setDefaults() {
 	viper.SetDefault("Log.Read", false)
 	viper.SetDefault("Log.Update", false)
 	viper.SetDefault("Log.Delete", false)
+	viper.SetDefault("HideDotPrefixFile", false)
 }
 
 func (cfg *Config) AuthenticationNeeded() bool {

@@ -25,6 +25,8 @@ port: "8000"
 #
 dir: "/tmp"
 
+# hide files named with a dot prefix e.g. 「.DS_STORE」
+hidedotprefixfile: true
 
 # --------------------------------- Basic Auth ---------------------------------
 #

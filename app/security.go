@@ -8,6 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -88,34 +89,34 @@ func AuthFromContext(ctx context.Context) *AuthInfo {
 	return info
 }
 
-func handle(ctx context.Context, w http.ResponseWriter, r *http.Request, app *App) {
+func handle(ctx context.Context, w http.ResponseWriter, r *http.Request, _app *App) {
 	// if there are no users, we don't need authentication here
-	if !app.Config.AuthenticationNeeded() {
-		app.Handler.ServeHTTP(w, r.WithContext(ctx))
+	if !_app.Config.AuthenticationNeeded() {
+		_app.Handler.ServeHTTP(w, r.WithContext(ctx))
 		return
 	}
 
-	username, password, ok := httpAuth(r, app.Config)
+	username, password, ok := httpAuth(r, _app.Config)
 	if !ok {
-		writeUnauthorized(w, app.Config.Realm)
+		writeUnauthorized(w, _app.Config.Realm)
 		return
 	}
 
-	authInfo, err := authenticate(app.Config, username, password)
+	authInfo, err := authenticate(_app.Config, username, password)
 	if err != nil {
 		log.WithField("user", username).Warn(err.Error())
 	}
 
 	if authInfo != nil && !authInfo.Authenticated {
-		writeUnauthorized(w, app.Config.Realm)
+		writeUnauthorized(w, _app.Config.Realm)
 		return
 	}
 
 	ctx = context.WithValue(ctx, authInfoKey, authInfo)
-	if hijack(ctx, w, r, app) == hijackTakeover {
+	if hijack(ctx, w, r, _app) == hijackTakeover {
 		return
 	}
-	app.Handler.ServeHTTP(w, r.WithContext(ctx))
+	_app.Handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
 func httpAuth(r *http.Request, config *Config) (string, string, bool) {
@@ -133,25 +134,25 @@ func writeUnauthorized(w http.ResponseWriter, realm string) {
 	_, _ = w.Write([]byte(fmt.Sprintf("%d %s", http.StatusUnauthorized, "Unauthorized")))
 }
 
-func hijack(ctx context.Context, w http.ResponseWriter, r *http.Request, app *App) hijackRet {
+func hijack(ctx context.Context, w http.ResponseWriter, r *http.Request, _app *App) hijackRet {
 	authInfo := AuthFromContext(ctx)
 	var reqPath string
-	if app.Handler.Prefix == "" {
+	if _app.Handler.Prefix == "" {
 		reqPath = r.URL.Path
-	} else if path := strings.TrimPrefix(r.URL.Path, app.Handler.Prefix);
+	} else if path := strings.TrimPrefix(r.URL.Path, _app.Handler.Prefix);
 		len(path) < len(r.URL.Path) {
 		reqPath = path
 	} else {
 		return hijackSkip
 	}
 
-	file, err := app.Handler.FileSystem.OpenFile(ctx, reqPath, os.O_RDONLY, 0)
+	file, err := _app.Handler.FileSystem.OpenFile(ctx, reqPath, os.O_RDONLY, 0)
 	var fi os.FileInfo
 	if (file == nil || err != nil) && authInfo.Username != adminUserNmae {
 		rejectRequest(w)
 		return hijackTakeover
 	} else {
-		fi, err = app.Handler.FileSystem.Stat(ctx, reqPath)
+		fi, err = _app.Handler.FileSystem.Stat(ctx, reqPath)
 		if (fi == nil || err != nil) && authInfo.Username != adminUserNmae {
 			rejectRequest(w)
 			return hijackTakeover
@@ -161,7 +162,7 @@ func hijack(ctx context.Context, w http.ResponseWriter, r *http.Request, app *Ap
 	switch r.Method {
 	case "GET":
 		if fi != nil && fi.IsDir() {
-			pathResolver := &Dir{Config: app.Config}
+			pathResolver := &Dir{Config: _app.Config}
 			filePath := pathResolver.resolve(ctx, reqPath)
 			http.ServeFile(w, r, filePath)
 			return hijackTakeover
@@ -181,6 +182,14 @@ func hijack(ctx context.Context, w http.ResponseWriter, r *http.Request, app *Ap
 		if hdr := r.Header.Get("Depth"); hdr == "" {
 			r.Header.Set("Depth", opDepth1)
 			return hijackModify
+		}
+		if _app.Config.HideDotPrefixFile {
+			fileName := filepath.Base(reqPath)
+			fileNameTrimedPreDot := strings.TrimPrefix(fileName, ".")
+			if len(fileName) > len(fileNameTrimedPreDot) {
+				rejectRequest(w)
+				return hijackTakeover
+			}
 		}
 		break
 	case "HEAD", "OPTIONS":
