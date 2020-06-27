@@ -184,10 +184,11 @@ func hijack(ctx context.Context, w http.ResponseWriter, r *http.Request, _app *A
 			return hijackModify
 		}
 		if _app.Config.HideDotPrefixFile {
-			fileName := filepath.Base(reqPath)
+			fileName := filepath.Base(filepath.Clean(reqPath))
 			fileNameTrimedPreDot := strings.TrimPrefix(fileName, ".")
 			if len(fileName) > len(fileNameTrimedPreDot) {
-				rejectRequest(w)
+				w.WriteHeader(http.StatusNotFound)
+				_, _ = w.Write([]byte(fmt.Sprintf("%d %s", http.StatusNotFound, "StatusNotFound")))
 				return hijackTakeover
 			}
 		}
