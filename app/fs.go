@@ -36,7 +36,7 @@ func (d Dir) resolve(ctx context.Context, name string) string {
 		strings.Contains(name, "\x00") {
 		return ""
 	}
-	dir := string(d.Config.Dir)
+	dir := d.Config.Dir
 	if dir == "" {
 		dir = "."
 	}
@@ -98,7 +98,7 @@ func (d Dir) RemoveAll(ctx context.Context, name string) error {
 	if name = d.resolve(ctx, name); name == "" {
 		return os.ErrNotExist
 	}
-	if name == filepath.Clean(string(d.Config.Dir)) {
+	if name == filepath.Clean(d.Config.Dir) {
 		// Prohibit removing the virtual root directory.
 		return os.ErrInvalid
 	}
@@ -126,7 +126,7 @@ func (d Dir) Rename(ctx context.Context, oldName, newName string) error {
 	if newName = d.resolve(ctx, newName); newName == "" {
 		return os.ErrNotExist
 	}
-	if root := filepath.Clean(string(d.Config.Dir)); root == oldName || root == newName {
+	if root := filepath.Clean(d.Config.Dir); root == oldName || root == newName {
 		// Prohibit renaming from or to the virtual root directory.
 		return os.ErrInvalid
 	}

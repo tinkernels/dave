@@ -9,12 +9,12 @@ import (
 	"syscall"
 )
 
-var passwdCmd = &cobra.Command{
+var PasswdCmd = &cobra.Command{
 	Use:   "passwd",
 	Short: "Generates a BCrypt hash of a given input string",
 	Run: func(cmd *cobra.Command, args []string) {
-		pw1 := readPassword()
-		pw2 := readPassword()
+		pw1 := readPassword("Type password: ")
+		pw2 := readPassword("Retype password: ")
 
 		pw1Str := string(pw1)
 		pw2Str := string(pw2)
@@ -28,9 +28,9 @@ var passwdCmd = &cobra.Command{
 	},
 }
 
-func readPassword() []byte {
-	fmt.Print("Enter password: ")
-	pw, err := terminal.ReadPassword(int(syscall.Stdin))
+func readPassword(hint string) []byte {
+	fmt.Print(hint)
+	pw, err := terminal.ReadPassword(syscall.Stdin)
 	if err != nil {
 		fmt.Printf("An error occurred reading the password: %s\n", err)
 		os.Exit(1)
@@ -38,8 +38,4 @@ func readPassword() []byte {
 
 	fmt.Println()
 	return pw
-}
-
-func init() {
-	RootCmd.AddCommand(passwdCmd)
 }

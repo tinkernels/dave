@@ -178,8 +178,8 @@ func TestDirResolve(t *testing.T) {
 
 func TestDirMkdir(t *testing.T) {
 	tmpDir := filepath.Join(os.TempDir(), "dave__"+strconv.FormatInt(time.Now().UnixNano(), 10))
-	os.Mkdir(tmpDir, 0700)
-	defer os.RemoveAll(tmpDir)
+	_ = os.Mkdir(tmpDir, 0700)
+	defer func(){_ = os.RemoveAll(tmpDir)}()
 
 	t.Logf("using test dir: %s", tmpDir)
 	configTmp := createTestConfig(tmpDir)
@@ -212,8 +212,8 @@ func TestDirMkdir(t *testing.T) {
 
 func TestDirOpenFile(t *testing.T) {
 	tmpDir := filepath.Join(os.TempDir(), "dave__"+strconv.FormatInt(time.Now().UnixNano(), 10))
-	os.Mkdir(tmpDir, 0700)
-	defer os.RemoveAll(tmpDir)
+	_ = os.Mkdir(tmpDir, 0700)
+	defer func(){_ = os.RemoveAll(tmpDir)}()
 	configTmp := createTestConfig(tmpDir)
 
 	ctx := context.Background()
@@ -235,7 +235,7 @@ func TestDirOpenFile(t *testing.T) {
 				Config: configTmp,
 			}
 			got, err := d.OpenFile(admin, tt.name, tt.flag, tt.perm)
-			if (err != nil) != tt.wantErr {
+			if (err != nil) != tt.wantErr || got == nil {
 				t.Errorf("Dir.OpenFile() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
@@ -258,8 +258,8 @@ func TestDirOpenFile(t *testing.T) {
 
 func TestRemoveDir(t *testing.T) {
 	tmpDir := filepath.Join(os.TempDir(), "dave__"+strconv.FormatInt(time.Now().UnixNano(), 10))
-	os.Mkdir(tmpDir, 0700)
-	defer os.RemoveAll(tmpDir)
+	_ = os.Mkdir(tmpDir, 0700)
+	defer func() {_ = os.RemoveAll(tmpDir)}()
 	configTmp := createTestConfig(tmpDir)
 
 	ctx := context.Background()
@@ -305,8 +305,8 @@ func TestDirRemoveAll(t *testing.T) {
 	ctx := context.Background()
 	admin := context.WithValue(ctx, authInfoKey, &AuthInfo{Username: "admin", Authenticated: true})
 	tmpDir := filepath.Join(os.TempDir(), "dave__"+strconv.FormatInt(time.Now().UnixNano(), 10))
-	os.Mkdir(tmpDir, 0700)
-	defer os.RemoveAll(tmpDir)
+	_ = os.Mkdir(tmpDir, 0700)
+	defer func() { _ = os.RemoveAll(tmpDir)}()
 	configTmp := createTestConfig(tmpDir)
 
 	tests := []struct {
@@ -351,8 +351,8 @@ func TestDirRemoveAll(t *testing.T) {
 
 func TestRename(t *testing.T) {
 	tmpDir := filepath.Join(os.TempDir(), "dave__"+strconv.FormatInt(time.Now().UnixNano(), 10))
-	os.Mkdir(tmpDir, 0700)
-	defer os.RemoveAll(tmpDir)
+	_ = os.Mkdir(tmpDir, 0700)
+	defer func() { _ = os.RemoveAll(tmpDir)}()
 	configTmp := createTestConfig(tmpDir)
 
 	ctx := context.Background()
@@ -411,8 +411,8 @@ func TestRename(t *testing.T) {
 
 func TestDirStat(t *testing.T) {
 	tmpDir := filepath.Join(os.TempDir(), "dave__"+strconv.FormatInt(time.Now().UnixNano(), 10))
-	os.Mkdir(tmpDir, 0700)
-	defer os.RemoveAll(tmpDir)
+	_ = os.Mkdir(tmpDir, 0700)
+	defer func() { _ = os.RemoveAll(tmpDir)}()
 	configTmp := createTestConfig(tmpDir)
 
 	ctx := context.Background()

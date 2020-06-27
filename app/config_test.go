@@ -18,8 +18,8 @@ func TestParseConfig(t *testing.T) {
 	viper.Reset()
 
 	tmpDir := filepath.Join(os.TempDir(), "dave__"+strconv.FormatInt(time.Now().UnixNano(), 10))
-	os.Mkdir(tmpDir, 0700)
-	defer os.RemoveAll(tmpDir)
+	_ = os.Mkdir(tmpDir, 0700)
+	defer func(){_ = os.RemoveAll(tmpDir)}()
 
 	tests := []struct {
 		name string
@@ -71,7 +71,7 @@ log:
 		t.Errorf("error reading test config. error = %v", err)
 	}
 	var cfg = &Config{}
-	viper.Unmarshal(&cfg)
+	_ = viper.Unmarshal(&cfg)
 
 	// let viper read from the tmp directory fist
 	viper.AddConfigPath(tmpDir)

@@ -46,6 +46,7 @@ users:
 
   #
   # user with username 'admin', password 'foo' and access to '/tmp'
+  # only admin own the write permission
   #
   admin:
     password: "$2a$10$yITzSSNJZAdDZs8iVBQzkuZCzZ49PyjTiPIrmBUKUpB0pwX7eySvW"

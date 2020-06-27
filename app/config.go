@@ -56,12 +56,12 @@ func ParseConfig() *Config {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		log.Fatal(fmt.Errorf("Fatal error config file: %s", err))
+		log.Fatal(fmt.Errorf("fatal error config file: %s", err))
 	}
 
 	err = viper.Unmarshal(&cfg)
 	if err != nil {
-		log.Fatal(fmt.Errorf("Fatal error parsing config file: %s", err))
+		log.Fatal(fmt.Errorf("fatal error parsing config file: %s", err))
 	}
 
 	if cfg.TLS != nil {
