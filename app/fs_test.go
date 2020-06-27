@@ -235,7 +235,7 @@ func TestDirOpenFile(t *testing.T) {
 				Config: configTmp,
 			}
 			got, err := d.OpenFile(admin, tt.name, tt.flag, tt.perm)
-			if (err != nil) != tt.wantErr || got == nil {
+			if (err != nil || got == nil) != tt.wantErr {
 				t.Errorf("Dir.OpenFile() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}

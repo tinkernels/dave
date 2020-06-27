@@ -14,4 +14,4 @@ release:
 	GOOS=windows GOARCH=386 go build $(build_flags) -o release/dave_windows-386.exe $(main_package)
 
 test:
-	go test -v ./...
+	go test -v ./... -race -coverprofile=coverage.txt -covermode=atomic
