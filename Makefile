@@ -6,6 +6,7 @@ build_flags = -ldflags "-w -s"
 
 release:
 	mkdir -p release
+	GO111MODULE=on
 	GOOS=linux GOARCH=amd64 go build  $(build_flags) -o release/dave_linux-amd64 $(main_package)
 	GOOS=linux GOARCH=386 go build  $(build_flags) -o release/dave_linux-386 $(main_package)
 	GOOS=linux GOARCH=arm go build  $(build_flags) -o release/dave_linux-arm $(main_package)
